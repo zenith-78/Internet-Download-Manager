@@ -1,82 +1,94 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
 // This class downloads a file from a URL.
 class Download extends Observable implements Runnable {
-// Max size of download buffer.
-private static final int MAX_BUFFER_SIZE = 1024;
-// These are the status names.
-public static final String STATUSES[] = {"Downloading",
-"Paused", "Complete", "Cancelled", "Error"};
-// These are the status
-codes.
-public static final int DOWNLOADING = 0;
-public static final int PAUSED = 1;
-public static final int COMPLETE = 2;
-public static final int CANCELLED = 3;
-public static final int ERROR = 4;
-private URL url; // download URL
-private int size; // size of download in bytes
-private int downloaded; // number of bytes downloaded
-private int status; // current status of download
-// Constructor for Download.
-public Download(URL url) {
-this.url = url;
-size = -1;
-downloaded = 0;
-status = DOWNLOADING;
-// Begin the download.
-download();
-}
-// Get this download's URL.
-public String getUrl() {
-return url.toString();
-}
-// Get this download's size.
-public int getSize() {
-return size;
-}
-// Get this download's progress.
-public float getProgress() {
-return ((float) downloaded / size) * 100;
-}
-// Get this download's status.
-public int getStatus() {
-return status;
-}
-// Pause this download.
-public void pause() {
-status = PAUSED;
-stateChanged();
-}
-// Resume this download.
-public void resume() {
-status = DOWNLOADING;
-stateChanged();
-download();
-}
-// Cancel this download.
-public void cancel() {
-status = CANCELLED;
-stateChanged();
-}
+    // Max size of download buffer.
+    private static final int MAX_BUFFER_SIZE = 1024;
+    // These are the status names.
+    public static final String STATUSES[] = { "Downloading",
+            "Paused", "Complete", "Cancelled", "Error" };
+    // These are the status codes.
+   
+    public static final int DOWNLOADING = 0;
+    public static final int PAUSED = 1;
+    public static final int COMPLETE = 2;
+    public static final int CANCELLED = 3;
+    public static final int ERROR = 4;
+    private URL url; // download URL
+    private int size; // size of download in bytes
+    private int downloaded; // number of bytes downloaded
+    private int status; // current status of download
+    // Constructor for Download.
 
-// Mark this download as having an error.
-private void error() {
-status = ERROR;
-stateChanged();
-}
-// Start or resume downloading.
-private void download() {
-Thread thread = new Thread(this);
-thread.start();
-}
-// Get file name portion of URL.
-private String getFileName(URL url) {
-String fileName = url.getFile();
-return fileName.substring(fileName.lastIndexOf('/') + 1);
-}
-// Download file.
+    public Download(URL url) {
+        this.url = url;
+        size = -1;
+        downloaded = 0;
+        status = DOWNLOADING;
+        // Begin the download.
+        download();
+    }
+
+    // Get this download's URL.
+    public String getUrl() {
+        return url.toString();
+    }
+
+    // Get this download's size.
+    public int getSize() {
+        return size;
+    }
+
+    // Get this download's progress.
+    public float getProgress() {
+        return ((float) downloaded / size) * 100;
+    }
+
+    // Get this download's status.
+    public int getStatus() {
+        return status;
+    }
+
+    // Pause this download.
+    public void pause() {
+        status = PAUSED;
+        stateChanged();
+    }
+
+    // Resume this download.
+    public void resume() {
+        status = DOWNLOADING;
+        stateChanged();
+        download();
+    }
+
+    // Cancel this download.
+    public void cancel() {
+        status = CANCELLED;
+        stateChanged();
+    }
+
+    // Mark this download as having an error.
+    private void error() {
+        status = ERROR;
+        stateChanged();
+    }
+
+    // Start or resume downloading.
+    private void download() {
+        Thread thread = new Thread(this);
+        thread.start();
+    }
+
+    // Get file name portion of URL.
+    private String getFileName(URL url) {
+        String fileName = url.getFile();
+        return fileName.substring(fileName.lastIndexOf('/') + 1);
+    }
+
+    // Download file.
 public void run() {
 RandomAccessFile file = null;
 InputStream stream = null;
